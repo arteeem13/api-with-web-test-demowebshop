@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.10.0'
+    id "io.freefair.lombok" version "6.5.1"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def allureVersion = "2.20.1",
+    selenideVersion = "6.10.3",
+    ownerVersion = "1.0.12",
+    junitVersion = "5.9.0",
+    restAssuredVersion = "5.2.0",
+    jacksonDatabindVersion = "2.14.0",
+    assertjCoreVersion = "3.23.1",
+    log4jVersion = "2.19.0"
+
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set(allureVersion)
+            }
+        }
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+}
+
+dependencies {
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter-api:$junitVersion",
+            "com.codeborne:selenide:$selenideVersion",
+            "io.qameta.allure:allure-selenide:$allureVersion",
+            "org.aeonbits.owner:owner:$ownerVersion",
+            "org.junit.jupiter:junit-jupiter:$junitVersion",
+            "io.rest-assured:rest-assured:$restAssuredVersion",
+            "io.qameta.allure:allure-rest-assured:$allureVersion",
+            "com.fasterxml.jackson.core:jackson-databind:$jacksonDatabindVersion",
+            "org.assertj:assertj-core:$assertjCoreVersion",
+            "org.apache.logging.log4j:log4j-api:$log4jVersion",
+            "org.apache.logging.log4j:log4j-core:$log4jVersion",
+            "com.github.javafaker:javafaker:1.0.2",
+            "org.jsoup:jsoup:1.13.1",
+            "us.codecraft:xsoup:0.3.2",
+            "org.awaitility:awaitility:4.1.1",
+            "org.slf4j:slf4j-simple:2.0.6")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
+}
